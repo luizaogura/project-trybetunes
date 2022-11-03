@@ -1,4 +1,6 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
+import { createUser } from '../services/userAPI';
 import Loading from './Loading';
 
 class Login extends React.Component {
@@ -6,6 +8,7 @@ class Login extends React.Component {
     nameInput: '',
     buttonDisabled: true,
     loading: false,
+    loginComplete: false,
   };
 
   validateSaveButton = () => {
@@ -38,43 +41,41 @@ class Login extends React.Component {
       await createUser({ name: nameInput });
       this.setState({
         loading: false,
+        loginComplete: true,
       });
     });
   };
 
   render() {
-    const { nameInput, buttonDisabled, loading } = this.state;
+    const { nameInput, buttonDisabled, loading, loginComplete } = this.state;
     return (
       <div data-testid="page-login">
         { loading ? <Loading /> : (
           <form>
             <div data-testid="page-login">
               <p>Login</p>
-              <div className="login-name">
-                <label htmlFor="nameInput">
-                  Insira seu nome:
-                  <input
-                    type="text"
-                    name="nameInput"
-                    data-testid="login-name-input"
-                    value={ nameInput }
-                    onChange={ this.onInputChange }
-                  />
-                </label>
-              </div>
-              <div className="login-button">
-                <button
-                  type="submit"
-                  data-testid="login-submit-button"
-                  disabled={ buttonDisabled }
-                  onClick={ this.submitButton }
-                >
-                  Entrar
-                </button>
-              </div>
+              <label htmlFor="nameInput">
+                Insira seu nome:
+                <input
+                  type="text"
+                  name="nameInput"
+                  data-testid="login-name-input"
+                  value={ nameInput }
+                  onChange={ this.onInputChange }
+                />
+              </label>
+              <button
+                type="submit"
+                data-testid="login-submit-button"
+                disabled={ buttonDisabled }
+                onClick={ this.submitButton }
+              >
+                Entrar
+              </button>
             </div>
           </form>
         )}
+        { loginComplete && <Redirect to="/search" /> }
       </div>
     );
   }
