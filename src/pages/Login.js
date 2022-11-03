@@ -52,27 +52,25 @@ class Login extends React.Component {
       <div data-testid="page-login">
         { loading ? <Loading /> : (
           <form>
-            <div data-testid="page-login">
-              <p>Login</p>
-              <label htmlFor="nameInput">
-                Insira seu nome:
-                <input
-                  type="text"
-                  name="nameInput"
-                  data-testid="login-name-input"
-                  value={ nameInput }
-                  onChange={ this.onInputChange }
-                />
-              </label>
-              <button
-                type="submit"
-                data-testid="login-submit-button"
-                disabled={ buttonDisabled }
-                onClick={ this.submitButton }
-              >
-                Entrar
-              </button>
-            </div>
+            <p>Login</p>
+            <label htmlFor="nameInput">
+              Insira seu nome:
+              <input
+                type="text"
+                name="nameInput"
+                data-testid="login-name-input"
+                value={ nameInput }
+                onChange={ this.onInputChange }
+              />
+            </label>
+            <button
+              type="submit"
+              data-testid="login-submit-button"
+              disabled={ buttonDisabled }
+              onClick={ this.submitButton }
+            >
+              Entrar
+            </button>
           </form>
         )}
         { loginComplete && <Redirect to="/search" /> }
