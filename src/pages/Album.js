@@ -22,8 +22,10 @@ class Album extends React.Component {
       loading: true,
     }, async () => {
       const musicSelected = await getMusics(id);
+      const filterMusic = musicSelected
+        .filter((musica) => musica.trackName);
       this.setState({
-        musicArray: musicSelected,
+        musicArray: filterMusic,
         albumName: musicSelected[0].collectionName,
         artistName: musicSelected[0].artistName,
         albumArt: musicSelected[0].artworkUrl100,
