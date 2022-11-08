@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import Loading from '../components/Loading';
 import MusicCard from '../components/MusicCard';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 class Album extends React.Component {
   state = {
@@ -11,6 +12,7 @@ class Album extends React.Component {
     artistName: '',
     albumArt: '',
     musicArray: [],
+    favMusicArray: [],
     loading: false,
   };
 
@@ -18,14 +20,15 @@ class Album extends React.Component {
     const { match } = this.props;
     const { id } = match.params;
 
-    this.setState({
-      loading: true,
+    this.setState({ loading: true,
     }, async () => {
       const musicSelected = await getMusics(id);
       const filterMusic = musicSelected
         .filter((musica) => musica.trackName);
+      const totalMusicsFav = await getFavoriteSongs();
       this.setState({
         musicArray: filterMusic,
+        favMusicArray: totalMusicsFav,
         albumName: musicSelected[0].collectionName,
         artistName: musicSelected[0].artistName,
         albumArt: musicSelected[0].artworkUrl100,
@@ -34,18 +37,34 @@ class Album extends React.Component {
     });
   }
 
+  addFavMusic = (songID) => {
+    const { musicArray } = this.state;
+    this.setState({ loading: true,
+    }, async () => {
+      const favMusicSelected = musicArray
+        .find((song) => song.trackId === songID);
+      favMusicSelected.checked = true;
+      await addSong(favMusicSelected);
+      this.setState((prevState) => ({
+        loading: false,
+        favMusicArray: [...prevState.favMusicArray, favMusicSelected],
+      }));
+    });
+  };
+
   render() {
     const {
       albumName,
       artistName,
       albumArt,
       musicArray,
+      favMusicArray,
       loading } = this.state;
 
     return (
       <div data-testid="page-album">
         <Header />
-        { loading ? <Loading /> : (
+        { loading ? (<Loading />) : (
           <div>
             <div className="album-info-container">
               <img src={ albumArt } alt={ albumName } />
@@ -58,6 +77,11 @@ class Album extends React.Component {
                   key={ song.trackId }
                   trackName={ song.trackName }
                   previewUrl={ song.previewUrl }
+                  trackId={ song.trackId }
+                  songInfo={ song }
+                  addFavMusic={ this.addFavMusic }
+                  checked={ favMusicArray
+                    .some((favorite) => favorite.trackId === song.trackId) }
                 />
               ))}
             </div>
